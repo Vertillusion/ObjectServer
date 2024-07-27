@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+
+.vs/
+x64/
+uploads/
+x64/
+objects.db
