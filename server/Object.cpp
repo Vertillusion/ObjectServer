@@ -1,8 +1,9 @@
 ﻿#include "Object.h"
 #include <functional>
 #include <random>
+#include <stdexcept>
 
-std::string random() {
+std::string _random() {
 	std::random_device randomDevice;
 	std::mt19937 gen(randomDevice());
 	std::uniform_int_distribution<> dis(0, 999999999);
@@ -104,7 +105,7 @@ private:
 		}
 		// Generate ID
 		if (!hasId) {
-			_object.members["id"] = random();
+			_object.members["id"] = _random();
 		}
 	}
 
@@ -197,14 +198,14 @@ private:
 		}
 
 		str += '"';
-		if (_source[_pos++] != '"') throw std::exception{ "Unexpected token." };
+		if (_source[_pos++] != '"') throw std::runtime_error{ "Unexpected token." };
 
 		return Token(TokenType::String, stringStart, _pos, str);
 	}
 
 	void assert(int expectedToken) {
 		if ((expectedToken & _token.type) == 0) {
-			throw std::exception{ "Unexpected token." };
+			throw std::runtime_error{ "Unexpected token." };
 		}
 	}
 };

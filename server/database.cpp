@@ -1,7 +1,7 @@
 ﻿#include "database.h"
 #include <exception>
 #include <chrono>
-
+#include <stdexcept>
 std::string formatString(std::string str) {
 	std::string::size_type pos = 0;
 	while ((pos = str.find('\'', pos)) != std::string::npos) {
@@ -15,7 +15,7 @@ std::string formatString(std::string str) {
 
 Database::Database(std::string const& path) {
 	if (int rc = sqlite3_open(path.c_str(), &_database); rc != 0) {
-		throw std::exception{ sqlite3_errmsg(_database) };
+		throw std::runtime_error{ sqlite3_errmsg(_database) };
 	}
 }
 
@@ -28,7 +28,7 @@ void Database::execute(std::string const& sql, sqlite3_callback callback, void* 
 	if (int rc = sqlite3_exec(_database, sql.c_str(), callback, argument, &errmsg); rc != 0) {
 		std::string error = errmsg;
 		sqlite3_free(errmsg);
-		throw std::exception(error.c_str());
+		throw std::runtime_error(error.c_str());
 	}
 }
 
@@ -86,7 +86,7 @@ std::string Database::select(std::string const& tableName, std::string const& co
 	while ((*object) == "")
 		if (std::chrono::duration<double>(std::chrono::steady_clock::now() - startTime)
 			.count() >= 1.)
-			throw std::exception("Timeout.");
+			throw std::runtime_error("Timeout.");
 	return *object;
 
 }
